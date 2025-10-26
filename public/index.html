@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTA 2D - Multiplayer Action Game</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div id="menu" class="menu">
+        <div class="menu-content">
+            <h1>🎮 GTA 2D</h1>
+            <p class="subtitle">Multiplayer Action Game</p>
+            <div class="menu-buttons">
+                <button id="startBtn" class="btn-primary">START GAME</button>
+            </div>
+            <div class="controls-info">
+                <h3>Controls</h3>
+                <p><strong>WASD</strong> - Move</p>
+                <p><strong>Mouse</strong> - Aim</p>
+                <p><strong>Click</strong> - Shoot</p>
+                <p><strong>E</strong> - Enter/Exit Car</p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="gameContainer"></div>
+    
+    <div id="hud" class="hud" style="display: none;">
+        <div class="hud-top">
+            <div class="health-bar">
+                <div class="health-label">HEALTH</div>
+                <div class="health-container">
+                    <div id="healthBar" class="health-fill"></div>
+                </div>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <span class="stat-label">KILLS</span>
+                    <span id="kills" class="stat-value">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">DEATHS</span>
+                    <span id="deaths" class="stat-value">0</span>
+                </div>
+            </div>
+        </div>
+        <div class="hud-bottom">
+            <div class="weapon-info">
+                <div class="weapon-name">🔫 PISTOL</div>
+                <div class="ammo">∞</div>
+            </div>
+        </div>
+        <div class="player-count">
+            <span id="playerCount">Players: 1</span>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
