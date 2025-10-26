@@ -37,12 +37,222 @@ let buildings;
 let playerInCar = false;
 let currentCar = null;
 
+// New weapon system variables
+let currentWeapon = 'pistol';
+let ownedWeapons = ['pistol'];
+let weaponStats = {};
+let lastShot = 0;
+let isReloading = false;
+let isShooting = false;
+let playerMoney = 500;
+let playerHealth = 100;
+let playerArmor = 0;
+
+// Chat variables
+let chatOpen = false;
+
 document.getElementById('startBtn').addEventListener('click', () => {
     document.getElementById('menu').style.display = 'none';
     document.getElementById('hud').style.display = 'block';
     game = new Phaser.Game(config);
     connectToServer();
+    setupUI();
 });
+
+// Setup all UI event listeners
+function setupUI() {
+    // Chat system
+    const chatInput = document.getElementById('chatInput');
+    const chatSend = document.getElementById('chatSend');
+    
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && chatOpen) {
+            sendChat();
+        }
+    });
+    
+    chatSend.addEventListener('click', sendChat);
+    
+    document.addEventListener('keydown', (e) => {
+        if (e.key.toLowerCase() === 't' && !chatOpen && document.activeElement !== chatInput) {
+            openChat();
+            e.preventDefault();
+        }
+    });
+    
+    // Shop system
+    document.getElementById('shopBtn').addEventListener('click', toggleShop);
+    
+    document.querySelector('.modal-close').addEventListener('click', () => {
+        document.getElementById('shopModal').style.display = 'none';
+    });
+    
+    // Shop items
+    document.querySelectorAll('.shop-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const type = item.dataset.type;
+            const itemName = item.dataset.item;
+            
+            if (type === 'weapon') {
+                socket.emit('shopPurchase', { type: 'weapon', item: itemName });
+            } else if (type === 'ammo') {
+                socket.emit('shopPurchase', { type: 'ammo', weapon: currentWeapon });
+            } else {
+                socket.emit('shopPurchase', { type: type });
+            }
+        });
+    });
+    
+    // Weapon slots
+    document.querySelectorAll('.weapon-slot').forEach(slot => {
+        slot.addEventListener('click', () => {
+            const weapon = slot.dataset.weapon;
+            if (ownedWeapons.includes(weapon)) {
+                switchWeapon(weapon);
+            }
+        });
+    });
+}
+
+// Chat functions
+function openChat() {
+    chatOpen = true;
+    const chatInput = document.getElementById('chatInput');
+    chatInput.focus();
+    chatInput.placeholder = 'Type message...';
+}
+
+function sendChat() {
+    const chatInput = document.getElementById('chatInput');
+    const message = chatInput.value.trim();
+    
+    if (message && socket) {
+        socket.emit('chatMessage', message);
+        chatInput.value = '';
+    }
+    
+    chatInput.blur();
+    chatInput.placeholder = 'Press T to chat...';
+    chatOpen = false;
+}
+
+function addChatMessage(data) {
+    const chatMessages = document.getElementById('chatMessages');
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'chat-message' + (data.type === 'system' ? ' system' : '');
+    msgDiv.textContent = data.type === 'system' ? 
+        data.message : 
+        `Player: ${data.message}`;
+    
+    chatMessages.appendChild(msgDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    while (chatMessages.children.length > 50) {
+        chatMessages.removeChild(chatMessages.firstChild);
+    }
+}
+
+// Shop functions
+function toggleShop() {
+    const modal = document.getElementById('shopModal');
+    if (modal.style.display === 'block') {
+        modal.style.display = 'none';
+    } else {
+        modal.style.display = 'block';
+        updateShopMoney();
+    }
+}
+
+function updateShopMoney() {
+    document.getElementById('shopMoney').textContent = '$' + playerMoney;
+}
+
+// Weapon functions
+function switchWeapon(weaponName) {
+    if (ownedWeapons.includes(weaponName)) {
+        currentWeapon = weaponName;
+        if (socket) socket.emit('switchWeapon', weaponName);
+        updateWeaponUI();
+        updateWeaponSlots();
+    }
+}
+
+function reloadWeapon() {
+    if (!isReloading && socket && weaponStats[currentWeapon]) {
+        const weapon = weaponStats[currentWeapon];
+        if (weapon.magAmmo < WEAPONS[currentWeapon].magSize && weapon.ammo > 0) {
+            isReloading = true;
+            socket.emit('reloadWeapon');
+            
+            setTimeout(() => {
+                isReloading = false;
+            }, WEAPONS[currentWeapon].reloadTime);
+        }
+    }
+}
+
+function updateWeaponUI() {
+    const weaponNameEl = document.getElementById('weaponName');
+    const magAmmoEl = document.getElementById('magAmmo');
+    const reserveAmmoEl = document.getElementById('reserveAmmo');
+    
+    if (weaponNameEl && WEAPONS[currentWeapon]) {
+        weaponNameEl.textContent = WEAPONS[currentWeapon].icon + ' ' + WEAPONS[currentWeapon].name.toUpperCase();
+    }
+    
+    if (weaponStats[currentWeapon]) {
+        if (magAmmoEl) magAmmoEl.textContent = weaponStats[currentWeapon].magAmmo || 0;
+        if (reserveAmmoEl) reserveAmmoEl.textContent = weaponStats[currentWeapon].ammo || 0;
+    }
+}
+
+function updateWeaponSlots() {
+    document.querySelectorAll('.weapon-slot').forEach(slot => {
+        const weapon = slot.dataset.weapon;
+        if (ownedWeapons.includes(weapon)) {
+            slot.classList.remove('locked');
+            if (weapon === currentWeapon) {
+                slot.classList.add('active');
+            } else {
+                slot.classList.remove('active');
+            }
+        } else {
+            slot.classList.add('locked');
+            slot.classList.remove('active');
+        }
+    });
+}
+
+function updateMoneyDisplay() {
+    const moneyEl = document.getElementById('money');
+    if (moneyEl) {
+        moneyEl.textContent = '$' + playerMoney;
+    }
+    updateShopMoney();
+}
+
+function showNotification(message, type) {
+    const notif = document.createElement('div');
+    notif.style.cssText = `
+        position: fixed;
+        top: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: ${type === 'success' ? '#6bcf7f' : '#ff6b6b'};
+        color: white;
+        padding: 15px 30px;
+        border-radius: 10px;
+        font-weight: bold;
+        z-index: 10000;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    `;
+    notif.textContent = message;
+    document.body.appendChild(notif);
+    
+    setTimeout(() => {
+        notif.remove();
+    }, 3000);
+}
 
 function connectToServer() {
     socket = io({
@@ -68,6 +278,26 @@ function connectToServer() {
         players = data.players;
         npcs = data.npcs;
         cars = data.cars;
+        
+        // Initialize player data
+        if (players[currentPlayerId]) {
+            const playerData = players[currentPlayerId];
+            playerMoney = playerData.money || 500;
+            playerHealth = playerData.health || 100;
+            playerArmor = playerData.armor || 0;
+            currentWeapon = playerData.currentWeapon || 'pistol';
+            ownedWeapons = playerData.ownedWeapons || ['pistol'];
+            weaponStats = playerData.weapons || { pistol: { ammo: 100, magAmmo: 12 } };
+        }
+        
+        // Load chat history
+        if (data.chatHistory) {
+            data.chatHistory.forEach(msg => addChatMessage(msg));
+        }
+        
+        updateWeaponUI();
+        updateWeaponSlots();
+        updateMoneyDisplay();
     });
 
     socket.on('gameState', (data) => {
@@ -172,6 +402,55 @@ function connectToServer() {
             playerInCar = false;
             currentCar = null;
         }
+    });
+    
+    // New socket events for weapons, shop, and chat
+    socket.on('chatMessage', (data) => {
+        addChatMessage(data);
+    });
+    
+    socket.on('weaponSwitched', (weaponName) => {
+        currentWeapon = weaponName;
+        updateWeaponUI();
+        updateWeaponSlots();
+    });
+    
+    socket.on('reloadComplete', (data) => {
+        isReloading = false;
+        if (weaponStats[data.weapon]) {
+            weaponStats[data.weapon].magAmmo = data.magAmmo;
+            weaponStats[data.weapon].ammo = data.ammo;
+        }
+        updateWeaponUI();
+        showNotification('Reloaded!', 'success');
+    });
+    
+    socket.on('outOfAmmo', () => {
+        showNotification('Out of ammo! Press R to reload', 'error');
+    });
+    
+    socket.on('purchaseSuccess', (data) => {
+        if (data.item !== 'ammo' && data.item !== 'health' && data.item !== 'armor') {
+            ownedWeapons.push(data.item);
+            weaponStats[data.item] = {
+                ammo: WEAPONS[data.item].maxAmmo,
+                magAmmo: WEAPONS[data.item].magSize
+            };
+            updateWeaponSlots();
+        }
+        playerMoney = data.money;
+        updateMoneyDisplay();
+        showNotification('Purchase successful!', 'success');
+        
+        // Update weapon stats if ammo purchased
+        if (data.item === 'ammo' && data.weapon && weaponStats[data.weapon]) {
+            weaponStats[data.weapon].ammo = players[currentPlayerId].weapons[data.weapon].ammo;
+            updateWeaponUI();
+        }
+    });
+    
+    socket.on('purchaseFailed', (reason) => {
+        showNotification(reason, 'error');
     });
 }
 
@@ -343,11 +622,22 @@ function create() {
         A: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
         S: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
         D: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
-        E: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E)
+        E: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E),
+        R: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R),
+        B: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B),
+        ONE: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE),
+        TWO: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO),
+        THREE: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE),
+        FOUR: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR),
+        FIVE: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FIVE)
     };
 
     this.input.on('pointerdown', (pointer) => {
-        shoot(this, pointer);
+        if (!chatOpen) shoot(this, pointer);
+    });
+    
+    this.input.on('pointerup', () => {
+        isShooting = false;
     });
 
     this.cameras.main.startFollow(player, true, 0.1, 0.1);
@@ -355,12 +645,27 @@ function create() {
     this.input.keyboard.on('keydown-E', () => {
         handleCarInteraction(this);
     });
+    
+    this.input.keyboard.on('keydown-R', () => {
+        reloadWeapon();
+    });
+    
+    this.input.keyboard.on('keydown-B', () => {
+        toggleShop();
+    });
 
     updatePlayerCount();
 }
 
 function update() {
     if (!player || !socket) return;
+    
+    // Weapon switching
+    if (Phaser.Input.Keyboard.JustDown(wasd.ONE)) switchWeapon('pistol');
+    if (Phaser.Input.Keyboard.JustDown(wasd.TWO)) switchWeapon('shotgun');
+    if (Phaser.Input.Keyboard.JustDown(wasd.THREE)) switchWeapon('smg');
+    if (Phaser.Input.Keyboard.JustDown(wasd.FOUR)) switchWeapon('rifle');
+    if (Phaser.Input.Keyboard.JustDown(wasd.FIVE)) switchWeapon('sniper');
 
     const speed = playerInCar ? 300 : 200;
     const rotationSpeed = playerInCar ? 0.04 : 0.08;
@@ -485,12 +790,33 @@ function update() {
 }
 
 function shoot(scene, pointer) {
-    if (!player || !socket || !socket.connected) return;
-
-    const worldPoint = scene.cameras.main.getWorldPoint(pointer.x, pointer.y);
-    const angle = Phaser.Math.Angle.Between(player.x, player.y, worldPoint.x, worldPoint.y);
+    if (!player || !socket || !socket.connected || chatOpen) return;
+    if (isReloading) return;
     
-    const bulletSpeed = 600;
+    const weapon = WEAPONS[currentWeapon];
+    if (!weapon) return;
+    
+    const now = Date.now();
+    if (now - lastShot < weapon.fireRate) return;
+    
+    // Check ammo
+    if (!weaponStats[currentWeapon] || weaponStats[currentWeapon].magAmmo <= 0) {
+        showNotification('Out of ammo! Press R to reload', 'error');
+        return;
+    }
+    
+    lastShot = now;
+    isShooting = true;
+    
+    const worldPoint = scene.cameras.main.getWorldPoint(pointer.x, pointer.y);
+    let angle = Phaser.Math.Angle.Between(player.x, player.y, worldPoint.x, worldPoint.y);
+    
+    // Add spread for weapons
+    if (weapon.spread > 0) {
+        angle += (Math.random() - 0.5) * weapon.spread;
+    }
+    
+    const bulletSpeed = weapon.bulletSpeed;
     const velocityX = Math.cos(angle) * bulletSpeed;
     const velocityY = Math.sin(angle) * bulletSpeed;
 
@@ -503,6 +829,19 @@ function shoot(scene, pointer) {
         velocityX: velocityX,
         velocityY: velocityY
     });
+    
+    // Decrease local ammo for immediate feedback
+    weaponStats[currentWeapon].magAmmo--;
+    updateWeaponUI();
+    
+    // Handle automatic weapons
+    if (weapon.automatic && isShooting) {
+        setTimeout(() => {
+            if (isShooting) {
+                shoot(scene, pointer);
+            }
+        }, weapon.fireRate);
+    }
 }
 
 function createMuzzleFlash(scene, x, y, angle) {
@@ -656,8 +995,10 @@ function updateHUD() {
 
     const playerData = players[currentPlayerId];
     const healthBar = document.getElementById('healthBar');
+    const armorBar = document.getElementById('armorBar');
     const kills = document.getElementById('kills');
     const deaths = document.getElementById('deaths');
+    const money = document.getElementById('money');
 
     if (healthBar) {
         healthBar.style.width = playerData.health + '%';
@@ -669,9 +1010,25 @@ function updateHUD() {
             healthBar.style.background = 'linear-gradient(90deg, #ff6b6b, #ff8787)';
         }
     }
+    
+    if (armorBar) {
+        armorBar.style.width = (playerData.armor || 0) + '%';
+    }
 
     if (kills) kills.textContent = playerData.kills || 0;
     if (deaths) deaths.textContent = playerData.deaths || 0;
+    if (money) money.textContent = '$' + (playerData.money || 0);
+    
+    // Update local variables
+    playerHealth = playerData.health;
+    playerArmor = playerData.armor || 0;
+    playerMoney = playerData.money || 0;
+    
+    // Update weapon stats
+    if (playerData.weapons) {
+        weaponStats = playerData.weapons;
+        updateWeaponUI();
+    }
 }
 
 function updatePlayerCount() {

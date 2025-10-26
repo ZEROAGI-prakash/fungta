@@ -196,7 +196,9 @@ This project is licensed under the MIT License.
 
 ## 👤 Author
 
-Your Name - [@yourusername](https://github.com/yourusername)
+**PRAKASH (ZEROAGI)** - [@ZEROAGI-prakash](https://github.com/ZEROAGI-prakash)
+
+Project Link: [https://github.com/ZEROAGI-prakash/fungta](https://github.com/ZEROAGI-prakash/fungta)
 
 ## 🙏 Acknowledgments
 
