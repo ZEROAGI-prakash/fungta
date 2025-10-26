@@ -160,15 +160,11 @@ function connectToServer() {
 }
 
 function preload() {
-    this.load.image('player', 'data:image/svg+xml;base64,' + btoa('<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg"><rect fill="#3498db" width="20" height="32" x="6" y="0"/><circle fill="#f39c12" cx="16" cy="8" r="6"/><rect fill="#2c3e50" width="8" height="4" x="12" y="28"/></svg>'));
-    
-    this.load.image('car', 'data:image/svg+xml;base64,' + btoa('<svg width="48" height="32" xmlns="http://www.w3.org/2000/svg"><rect fill="#e74c3c" width="48" height="24" x="0" y="4" rx="4"/><rect fill="#34495e" width="12" height="16" x="8" y="8"/><rect fill="#34495e" width="12" height="16" x="28" y="8"/><circle fill="#2c3e50" cx="12" cy="28" r="4"/><circle fill="#2c3e50" cx="36" cy="28" r="4"/></svg>'));
-    
-    this.load.image('npc', 'data:image/svg+xml;base64,' + btoa('<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg"><rect fill="#95a5a6" width="16" height="24" x="4" y="0"/><circle fill="#ecf0f1" cx="12" cy="6" r="5"/></svg>'));
-    
-    this.load.image('building', 'data:image/svg+xml;base64,' + btoa('<svg width="100" height="120" xmlns="http://www.w3.org/2000/svg"><rect fill="#7f8c8d" width="100" height="120"/><rect fill="#34495e" width="20" height="20" x="10" y="10"/><rect fill="#34495e" width="20" height="20" x="40" y="10"/><rect fill="#34495e" width="20" height="20" x="70" y="10"/><rect fill="#34495e" width="20" height="20" x="10" y="40"/><rect fill="#34495e" width="20" height="20" x="40" y="40"/><rect fill="#34495e" width="20" height="20" x="70" y="40"/><rect fill="#34495e" width="20" height="20" x="10" y="70"/><rect fill="#34495e" width="20" height="20" x="40" y="70"/><rect fill="#34495e" width="20" height="20" x="70" y="70"/></svg>'));
-    
-    this.load.image('bullet', 'data:image/svg+xml;base64,' + btoa('<svg width="8" height="8" xmlns="http://www.w3.org/2000/svg"><circle fill="#ffd93d" cx="4" cy="4" r="4"/></svg>'));
+    this.load.image('player', 'assets/player.svg');
+    this.load.image('car', 'assets/car.svg');
+    this.load.image('npc', 'assets/npc.svg');
+    this.load.image('building', 'assets/building.svg');
+    this.load.image('bullet', 'assets/bullet.svg');
 }
 
 function create() {
