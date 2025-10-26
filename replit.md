@@ -33,10 +33,13 @@ A browser-based multiplayer 2D action game inspired by GTA 2, built with Phaser.
 - Can be killed by players
 
 ✅ **Map & Environment**
-- 3000x3000 pixel city map
-- Buildings as obstacles
-- Grid-based city layout
-- Multiple districts
+- 3000x3000 pixel city map with proper roads
+- Gray asphalt roads with yellow lane markings
+- Grid layout with roads every 300 pixels
+- 57 buildings with 3 distinct types (tall gray, very tall gray, orange residential)
+- Deterministic building placement for multiplayer sync
+- Green park patches at block corners
+- Realistic city feel with varied building architecture
 
 ✅ **UI/HUD**
 - Health bar with color indicators
@@ -89,13 +92,23 @@ A browser-based multiplayer 2D action game inspired by GTA 2, built with Phaser.
 - Bullets collide with buildings, players, NPCs, and cars
 
 ### Vehicles
-- 15 cars spawn on map
+- 15 cars spawn on map with 3 different types (red, blue, green)
+- Detailed sprites with headlights, taillights, windows, and wheels
 - 100 HP per car
 - Can be destroyed by shooting
 - Only one player per car
 - Explosion effect on destruction
 
 ## Recent Changes
+- **Oct 26, 2025:** Map & Vehicle Improvements
+  - Enhanced city map with proper gray roads and yellow lane markings
+  - Added 3 different building types for visual variety
+  - Fixed critical multiplayer desync with deterministic building placement
+  - Improved car sprites with 3 different types (red, blue, green)
+  - Added detailed car features: headlights, taillights, windows, wheels
+  - Increased bullet pool capacity to 500 for heavy combat
+  - Added safety checks to prevent bullet pool crashes
+  
 - **Oct 26, 2025:** Initial MVP implementation
   - Complete multiplayer system
   - All core features working
