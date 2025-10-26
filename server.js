@@ -1,9 +1,25 @@
 const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
-const io = require('socket.io')(http);
+const io = require('socket.io')(http, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  },
+  pingTimeout: 60000,
+  pingInterval: 25000
+});
 
 app.use(express.static('public'));
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'ok', 
+    players: Object.keys(players).length,
+    uptime: process.uptime()
+  });
+});
 
 const players = {};
 const npcs = {};
@@ -65,12 +81,16 @@ io.on('connection', (socket) => {
   socket.broadcast.emit('playerJoined', players[socket.id]);
 
   socket.on('playerMove', (data) => {
-    if (players[socket.id]) {
-      players[socket.id].x = data.x;
-      players[socket.id].y = data.y;
-      players[socket.id].rotation = data.rotation;
-      players[socket.id].velocityX = data.velocityX;
-      players[socket.id].velocityY = data.velocityY;
+    try {
+      if (players[socket.id] && data) {
+        players[socket.id].x = Math.max(0, Math.min(3000, data.x || 0));
+        players[socket.id].y = Math.max(0, Math.min(3000, data.y || 0));
+        players[socket.id].rotation = data.rotation || 0;
+        players[socket.id].velocityX = data.velocityX || 0;
+        players[socket.id].velocityY = data.velocityY || 0;
+      }
+    } catch (error) {
+      console.error('Error in playerMove:', error);
     }
   });
 
@@ -86,49 +106,55 @@ io.on('connection', (socket) => {
   });
 
   socket.on('bulletHit', (data) => {
-    if (data.targetType === 'player' && players[data.targetId]) {
-      players[data.targetId].health -= 20;
+    try {
+      if (!data || !data.targetType || !data.targetId) return;
       
-      if (players[data.targetId].health <= 0) {
-        players[data.targetId].health = 100;
-        players[data.targetId].deaths++;
+      if (data.targetType === 'player' && players[data.targetId]) {
+        players[data.targetId].health -= 20;
         
-        if (players[socket.id]) {
-          players[socket.id].kills++;
+        if (players[data.targetId].health <= 0) {
+          players[data.targetId].health = 100;
+          players[data.targetId].deaths++;
+          
+          if (players[socket.id]) {
+            players[socket.id].kills++;
+          }
+          
+          const spawnX = 400 + Math.random() * 200;
+          const spawnY = 300 + Math.random() * 200;
+          players[data.targetId].x = spawnX;
+          players[data.targetId].y = spawnY;
+          players[data.targetId].inCar = null;
+          
+          io.emit('playerKilled', {
+            killedId: data.targetId,
+            killerId: socket.id,
+            spawnX: spawnX,
+            spawnY: spawnY
+          });
+        } else {
+          io.emit('playerHit', {
+            playerId: data.targetId,
+            health: players[data.targetId].health
+          });
         }
+      } else if (data.targetType === 'npc' && npcs[data.targetId]) {
+        delete npcs[data.targetId];
+        io.emit('npcKilled', data.targetId);
+      } else if (data.targetType === 'car' && cars[data.targetId]) {
+        cars[data.targetId].health -= 20;
         
-        const spawnX = 400 + Math.random() * 200;
-        const spawnY = 300 + Math.random() * 200;
-        players[data.targetId].x = spawnX;
-        players[data.targetId].y = spawnY;
-        players[data.targetId].inCar = null;
-        
-        io.emit('playerKilled', {
-          killedId: data.targetId,
-          killerId: socket.id,
-          spawnX: spawnX,
-          spawnY: spawnY
-        });
-      } else {
-        io.emit('playerHit', {
-          playerId: data.targetId,
-          health: players[data.targetId].health
-        });
-      }
-    } else if (data.targetType === 'npc' && npcs[data.targetId]) {
-      delete npcs[data.targetId];
-      io.emit('npcKilled', data.targetId);
-    } else if (data.targetType === 'car' && cars[data.targetId]) {
-      cars[data.targetId].health -= 20;
-      
-      if (cars[data.targetId].health <= 0) {
-        const driverId = cars[data.targetId].driver;
-        if (driverId && players[driverId]) {
-          players[driverId].inCar = null;
+        if (cars[data.targetId].health <= 0) {
+          const driverId = cars[data.targetId].driver;
+          if (driverId && players[driverId]) {
+            players[driverId].inCar = null;
+          }
+          delete cars[data.targetId];
+          io.emit('carDestroyed', data.targetId);
         }
-        delete cars[data.targetId];
-        io.emit('carDestroyed', data.targetId);
       }
+    } catch (error) {
+      console.error('Error in bulletHit:', error);
     }
   });
 
@@ -213,5 +239,15 @@ setInterval(() => {
 
 const PORT = process.env.PORT || 5000;
 http.listen(PORT, '0.0.0.0', () => {
-  console.log(`Game server running on port ${PORT}`);
+  console.log(`🎮 GTA 2D Server running on port ${PORT}`);
+  console.log(`🌐 Visit: http://localhost:${PORT}`);
+  console.log(`📊 Health check: http://localhost:${PORT}/health`);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM signal received: closing HTTP server');
+  http.close(() => {
+    console.log('HTTP server closed');
+  });
 });

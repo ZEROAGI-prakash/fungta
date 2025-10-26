@@ -45,7 +45,23 @@ document.getElementById('startBtn').addEventListener('click', () => {
 });
 
 function connectToServer() {
-    socket = io();
+    socket = io({
+        reconnection: true,
+        reconnectionDelay: 1000,
+        reconnectionAttempts: 5
+    });
+
+    socket.on('connect', () => {
+        console.log('✅ Connected to server');
+    });
+
+    socket.on('disconnect', () => {
+        console.log('❌ Disconnected from server');
+    });
+
+    socket.on('connect_error', (error) => {
+        console.error('Connection error:', error);
+    });
 
     socket.on('init', (data) => {
         currentPlayerId = data.id;
@@ -469,7 +485,7 @@ function update() {
 }
 
 function shoot(scene, pointer) {
-    if (!player) return;
+    if (!player || !socket || !socket.connected) return;
 
     const worldPoint = scene.cameras.main.getWorldPoint(pointer.x, pointer.y);
     const angle = Phaser.Math.Angle.Between(player.x, player.y, worldPoint.x, worldPoint.y);

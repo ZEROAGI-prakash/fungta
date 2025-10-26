@@ -1,15 +1,27 @@
 {
-  "name": "workspace",
+  "name": "gta-2d-multiplayer",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Real-time multiplayer 2D top-down action game",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "dev": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "game",
+    "multiplayer",
+    "phaser",
+    "socket.io",
+    "gta",
+    "2d"
+  ],
   "author": "",
-  "license": "ISC",
-  "description": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
   "dependencies": {
     "express": "^5.1.0",
     "phaser": "^3.90.0",
