@@ -52,8 +52,75 @@ body {
     font-size: 16px;
     color: #4ecdc4;
     margin-bottom: 30px;
-    text-shadow: 0 0 10px rgba(78, 205, 196, 0.6);
-    letter-spacing: 2px;
+    font-weight: bold;
+}
+
+/* Name Input */
+.name-input-container {
+    margin: 20px 0;
+}
+
+.name-input-container label {
+    display: block;
+    color: #ffd93d;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.name-input-container input {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    border: 2px solid #4ecdc4;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.name-input-container input:focus {
+    outline: none;
+    border-color: #ff6b6b;
+    box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+}
+
+/* Save Controls */
+.save-controls {
+    margin: 15px 0;
+}
+
+/* Server Info */
+.server-info {
+    margin: 25px 0;
+    padding: 20px;
+    background: rgba(78, 205, 196, 0.1);
+    border: 2px solid #4ecdc4;
+    border-radius: 10px;
+}
+
+.server-info p {
+    margin: 8px 0;
+    color: #fff;
+}
+
+.ip-address {
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    font-weight: bold;
+    color: #4ecdc4 !important;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 8px 15px;
+    border-radius: 5px;
+    margin: 5px 0 !important;
+}
+
+.help-text {
+    font-size: 14px;
+    color: #ffd93d !important;
+    margin-top: 10px !important;
+    font-style: italic;
 }
 
 .menu-buttons {

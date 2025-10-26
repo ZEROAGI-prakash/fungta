@@ -1,6 +1,7 @@
 let socket;
 let game;
 let currentPlayerId;
+let playerName = 'Player';
 
 const config = {
     type: Phaser.AUTO,
@@ -55,11 +56,41 @@ let miniMap = null;
 let chatOpen = false;
 
 document.getElementById('startBtn').addEventListener('click', () => {
+    // Get player name
+    const nameInput = document.getElementById('playerNameInput');
+    if (nameInput && nameInput.value.trim()) {
+        playerName = nameInput.value.trim();
+    }
+    
+    // Check for saved game
+    const savedData = saveSystem.loadProgress();
+    if (savedData) {
+        playerName = savedData.playerName || playerName;
+        playerMoney = savedData.money || 500;
+        ownedWeapons = savedData.ownedWeapons || ['pistol'];
+    }
+    
     document.getElementById('menu').style.display = 'none';
     document.getElementById('hud').style.display = 'block';
     game = new Phaser.Game(config);
     connectToServer();
     setupUI();
+    
+    // Enable auto-save every 30 seconds
+    saveSystem.enableAutoSave(() => {
+        if (players[currentPlayerId]) {
+            return {
+                playerName: playerName,
+                money: playerMoney,
+                kills: players[currentPlayerId].kills || 0,
+                deaths: players[currentPlayerId].deaths || 0,
+                ownedWeapons: ownedWeapons,
+                weapons: weaponStats,
+                armor: playerArmor
+            };
+        }
+        return null;
+    });
 });
 
 // Setup all UI event listeners
@@ -296,6 +327,11 @@ function connectToServer() {
         players = data.players;
         npcs = data.npcs;
         cars = data.cars;
+        
+        // Send player name to server
+        if (playerName) {
+            socket.emit('updateName', playerName);
+        }
         
         // Initialize player data
         if (players[currentPlayerId]) {
@@ -770,11 +806,20 @@ function update() {
         if (!otherPlayer) {
             otherPlayer = otherPlayers.create(playerData.x, playerData.y, 'player');
             otherPlayer.playerId = id;
-            otherPlayer.nameText = this.add.text(playerData.x, playerData.y - 30, 'Player', {
-                fontSize: '12px',
-                fill: '#fff',
-                backgroundColor: '#000'
+            const displayName = playerData.name || 'Player';
+            otherPlayer.nameText = this.add.text(playerData.x, playerData.y - 30, displayName, {
+                fontSize: '14px',
+                fontWeight: 'bold',
+                fill: '#ffd93d',
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                padding: { x: 6, y: 3 }
             }).setOrigin(0.5);
+        } else {
+            // Update name if changed
+            const displayName = playerData.name || 'Player';
+            if (otherPlayer.nameText) {
+                otherPlayer.nameText.setText(displayName);
+            }
         }
 
         if (playerData.inCar) {
@@ -786,7 +831,7 @@ function update() {
             otherPlayer.x = Phaser.Math.Linear(otherPlayer.x, playerData.x, 0.2);
             otherPlayer.y = Phaser.Math.Linear(otherPlayer.y, playerData.y, 0.2);
             otherPlayer.rotation = playerData.rotation;
-            otherPlayer.nameText.setPosition(otherPlayer.x, otherPlayer.y - 30);
+            otherPlayer.nameText.setPosition(otherPlayer.x, otherPlayer.y - 35);
         }
     });
 

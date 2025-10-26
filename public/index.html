@@ -10,6 +10,8 @@
     <script src="weapons.js"></script>
     <script src="soundManager.js"></script>
     <script src="miniMap.js"></script>
+    <script src="saveSystem.js"></script>
+    <script src="carSystem.js"></script>
 </head>
 <body>
     <div id="menu" class="menu">
@@ -17,15 +19,38 @@
             <h1>🎮 GTA 2D</h1>
             <p class="subtitle">Multiplayer Action Game</p>
             <p class="author">Created by ZEROAGI-PRAKASH</p>
+            
+            <!-- Player Name Input -->
+            <div class="name-input-container">
+                <label for="playerNameInput">Your Name:</label>
+                <input type="text" id="playerNameInput" placeholder="Enter your name" maxlength="15" value="Player">
+            </div>
+            
+            <!-- Save/Load Section -->
+            <div class="save-controls">
+                <button id="loadBtn" class="btn-secondary" style="display:none;">📂 LOAD SAVED GAME</button>
+            </div>
+            
             <div class="menu-buttons">
                 <button id="startBtn" class="btn-primary">START GAME</button>
             </div>
+            
+            <!-- Server Info -->
+            <div class="server-info">
+                <p><strong>🌐 Your Server:</strong></p>
+                <p class="ip-address">http://localhost:3000</p>
+                <p class="ip-address">http://192.168.31.4:3000</p>
+                <p class="help-text">Share this with friends to play together!</p>
+            </div>
+            
             <div class="controls-info">
                 <h3>Controls</h3>
                 <p><strong>WASD</strong> - Move</p>
                 <p><strong>Mouse</strong> - Aim</p>
                 <p><strong>Click</strong> - Shoot</p>
                 <p><strong>E</strong> - Enter/Exit Car</p>
+                <p><strong>1-5</strong> - Switch Weapons</p>
+                <p><strong>R</strong> - Reload | <strong>B</strong> - Shop | <strong>T</strong> - Chat</p>
             </div>
         </div>
     </div>

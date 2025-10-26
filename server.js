@@ -63,6 +63,7 @@ io.on('connection', (socket) => {
 
   players[socket.id] = {
     id: socket.id,
+    name: 'Player', // Will be updated by client
     x: 400 + Math.random() * 200,
     y: 300 + Math.random() * 200,
     rotation: 0,
@@ -103,6 +104,15 @@ io.on('connection', (socket) => {
   chatMessages.push(joinMsg);
   if (chatMessages.length > 50) chatMessages.shift();
   io.emit('chatMessage', joinMsg);
+
+  // Handle player name update
+  socket.on('updateName', (name) => {
+    if (players[socket.id] && name && name.length > 0 && name.length <= 15) {
+      players[socket.id].name = name;
+      console.log(`Player ${socket.id} set name to: ${name}`);
+      io.emit('playerUpdated', players[socket.id]);
+    }
+  });
 
   socket.on('playerMove', (data) => {
     try {
