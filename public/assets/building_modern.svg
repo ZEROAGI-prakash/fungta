@@ -1,0 +1,65 @@
+<svg width="80" height="120" xmlns="http://www.w3.org/2000/svg">
+  <!-- Modern Office Building -->
+  <defs>
+    <linearGradient id="buildingGrad1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#64748b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#475569;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="windowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#93c5fd;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#60a5fa;stop-opacity:0.6" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Shadow -->
+  <ellipse cx="40" cy="115" rx="35" ry="5" fill="rgba(0,0,0,0.3)"/>
+  
+  <!-- Main building structure -->
+  <rect x="5" y="20" width="70" height="95" fill="url(#buildingGrad1)" stroke="#334155" stroke-width="2"/>
+  
+  <!-- Roof -->
+  <polygon points="5,20 40,5 75,20" fill="#1e293b" stroke="#0f172a" stroke-width="1"/>
+  
+  <!-- Windows - 4 columns, 8 rows -->
+  <g id="windows">
+    <!-- Column 1 -->
+    <rect x="12" y="28" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="12" y="40" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="12" y="52" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="12" y="64" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="12" y="76" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="12" y="88" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="12" y="100" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    
+    <!-- Column 2 -->
+    <rect x="27" y="28" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="27" y="40" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="27" y="52" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="27" y="64" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="27" y="76" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="27" y="88" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="27" y="100" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    
+    <!-- Column 3 -->
+    <rect x="43" y="28" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="43" y="40" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="43" y="52" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="43" y="64" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="43" y="76" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="43" y="88" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="43" y="100" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    
+    <!-- Column 4 -->
+    <rect x="58" y="28" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="58" y="40" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="58" y="52" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="58" y="64" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="58" y="76" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="58" y="88" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+    <rect x="58" y="100" width="10" height="8" fill="url(#windowGrad)" stroke="#1e40af" stroke-width="0.5"/>
+  </g>
+  
+  <!-- Door -->
+  <rect x="32" y="100" width="16" height="15" fill="#1e293b" stroke="#0f172a" stroke-width="1"/>
+  <circle cx="44" cy="107" r="1" fill="#fbbf24"/>
+</svg>

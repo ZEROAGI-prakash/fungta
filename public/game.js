@@ -48,6 +48,9 @@ let playerMoney = 500;
 let playerHealth = 100;
 let playerArmor = 0;
 
+// Mini-map
+let miniMap = null;
+
 // Chat variables
 let chatOpen = false;
 
@@ -183,6 +186,11 @@ function reloadWeapon() {
         if (weapon.magAmmo < WEAPONS[currentWeapon].magSize && weapon.ammo > 0) {
             isReloading = true;
             socket.emit('reloadWeapon');
+            
+            // Play reload sound
+            if (typeof soundManager !== 'undefined') {
+                soundManager.playReload();
+            }
             
             setTimeout(() => {
                 isReloading = false;
@@ -442,6 +450,11 @@ function connectToServer() {
         updateMoneyDisplay();
         showNotification('Purchase successful!', 'success');
         
+        // Play purchase sound
+        if (typeof soundManager !== 'undefined') {
+            soundManager.playPurchase();
+        }
+        
         // Update weapon stats if ammo purchased
         if (data.item === 'ammo' && data.weapon && weaponStats[data.weapon]) {
             weaponStats[data.weapon].ammo = players[currentPlayerId].weapons[data.weapon].ammo;
@@ -642,6 +655,9 @@ function create() {
 
     this.cameras.main.startFollow(player, true, 0.1, 0.1);
 
+    // Initialize mini-map
+    miniMap = new MiniMap(this);
+
     this.input.keyboard.on('keydown-E', () => {
         handleCarInteraction(this);
     });
@@ -787,6 +803,11 @@ function update() {
             car.rotation = carData.rotation;
         }
     });
+    
+    // Update mini-map
+    if (miniMap) {
+        miniMap.update(player, players, npcs, cars, buildings);
+    }
 }
 
 function shoot(scene, pointer) {
@@ -821,6 +842,11 @@ function shoot(scene, pointer) {
     const velocityY = Math.sin(angle) * bulletSpeed;
 
     createMuzzleFlash(scene, player.x, player.y, angle);
+    
+    // Play gunshot sound
+    if (typeof soundManager !== 'undefined') {
+        soundManager.playGunshot(currentWeapon);
+    }
 
     socket.emit('playerShoot', {
         x: player.x,
@@ -870,6 +896,10 @@ function createBullet(scene, data) {
     if (bullet.shooterId === currentPlayerId) {
         scene.physics.add.overlap(bullet, player, (bullet, playerSprite) => {
             if (bullet.shooterId !== currentPlayerId) {
+                // Play hit sound
+                if (typeof soundManager !== 'undefined') {
+                    soundManager.playHit();
+                }
                 socket.emit('bulletHit', {
                     targetType: 'player',
                     targetId: currentPlayerId
@@ -880,6 +910,10 @@ function createBullet(scene, data) {
 
         scene.physics.add.overlap(bullet, otherPlayers, (bullet, target) => {
             if (bullet.shooterId !== target.playerId) {
+                // Play hit sound
+                if (typeof soundManager !== 'undefined') {
+                    soundManager.playHit();
+                }
                 socket.emit('bulletHit', {
                     targetType: 'player',
                     targetId: target.playerId
@@ -928,6 +962,11 @@ function handleCarInteraction(scene) {
         const nearestCar = findNearestCar();
         if (nearestCar && Phaser.Math.Distance.Between(player.x, player.y, nearestCar.x, nearestCar.y) < 60) {
             socket.emit('enterCar', nearestCar.carId);
+            
+            // Play car engine sound
+            if (typeof soundManager !== 'undefined') {
+                soundManager.playCarEngine();
+            }
         }
     }
 }

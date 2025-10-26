@@ -1,0 +1,37 @@
+<svg width="60" height="40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sportCarBody" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ef4444;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#dc2626;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="wheelGrad">
+      <stop offset="0%" style="stop-color:#1f2937;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:1" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Shadow -->
+  <ellipse cx="30" cy="38" rx="25" ry="4" fill="#000000" opacity="0.3"/>
+  
+  <!-- Car body -->
+  <path d="M 10 25 L 5 20 L 15 10 L 35 8 L 50 12 L 55 20 L 50 25 Z" fill="url(#sportCarBody)" stroke="#991b1b" stroke-width="1.5"/>
+  
+  <!-- Windshield -->
+  <path d="M 18 12 L 25 10 L 30 12 L 28 18 L 20 18 Z" fill="#60a5fa" opacity="0.7"/>
+  
+  <!-- Side window -->
+  <path d="M 32 12 L 40 13 L 42 18 L 32 18 Z" fill="#60a5fa" opacity="0.7"/>
+  
+  <!-- Wheels -->
+  <circle cx="15" cy="26" r="5" fill="url(#wheelGrad)" stroke="#6b7280" stroke-width="1"/>
+  <circle cx="15" cy="26" r="2" fill="#9ca3af"/>
+  <circle cx="45" cy="26" r="5" fill="url(#wheelGrad)" stroke="#6b7280" stroke-width="1"/>
+  <circle cx="45" cy="26" r="2" fill="#9ca3af"/>
+  
+  <!-- Headlights -->
+  <circle cx="52" cy="18" r="2" fill="#fef08a"/>
+  <circle cx="52" cy="22" r="2" fill="#fef08a"/>
+  
+  <!-- Spoiler -->
+  <rect x="3" y="18" width="5" height="2" fill="#991b1b"/>
+</svg>
