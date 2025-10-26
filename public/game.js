@@ -162,8 +162,13 @@ function connectToServer() {
 function preload() {
     this.load.image('player', 'assets/player.svg');
     this.load.image('car', 'assets/car.svg');
+    this.load.image('car2', 'assets/car2.svg');
+    this.load.image('car3', 'assets/car3.svg');
     this.load.image('npc', 'assets/npc.svg');
     this.load.image('building', 'assets/building.svg');
+    this.load.image('building1', 'assets/building1.svg');
+    this.load.image('building2', 'assets/building2.svg');
+    this.load.image('building3', 'assets/building3.svg');
     this.load.image('bullet', 'assets/bullet.svg');
 }
 
@@ -172,45 +177,126 @@ function create() {
     this.physics.world.setBounds(0, 0, 3000, 3000);
 
     const graphics = this.add.graphics();
+    
     graphics.fillStyle(0x2d5016, 1);
     graphics.fillRect(0, 0, 3000, 3000);
 
-    for (let i = 0; i < 3000; i += 100) {
-        graphics.lineStyle(2, 0x556b2f, 0.3);
+    graphics.fillStyle(0x4a4a4a, 1);
+    for (let x = 0; x < 3000; x += 300) {
+        graphics.fillRect(x, 0, 60, 3000);
+    }
+    for (let y = 0; y < 3000; y += 300) {
+        graphics.fillRect(0, y, 3000, 60);
+    }
+
+    graphics.lineStyle(4, 0xffff00, 1);
+    for (let x = 0; x < 3000; x += 300) {
         graphics.beginPath();
-        graphics.moveTo(i, 0);
-        graphics.lineTo(i, 3000);
+        graphics.moveTo(x + 30, 0);
+        graphics.lineTo(x + 30, 3000);
         graphics.strokePath();
+    }
+    for (let y = 0; y < 3000; y += 300) {
         graphics.beginPath();
-        graphics.moveTo(0, i);
-        graphics.lineTo(3000, i);
+        graphics.moveTo(0, y + 30);
+        graphics.lineTo(3000, y + 30);
         graphics.strokePath();
     }
 
-    buildings = this.physics.add.staticGroup();
-    const buildingPositions = [
-        [200, 200], [400, 200], [600, 200],
-        [200, 600], [400, 600], [600, 600],
-        [1000, 400], [1200, 400], [1400, 400],
-        [1000, 800], [1200, 800], [1400, 800],
-        [2000, 500], [2200, 500], [2400, 500],
-        [2000, 900], [2200, 900], [2400, 900],
-        [800, 1500], [1000, 1500], [1200, 1500],
-        [1600, 2000], [1800, 2000], [2000, 2000],
-        [400, 2400], [600, 2400], [800, 2400]
-    ];
+    graphics.fillStyle(0x3d5a3d, 1);
+    for (let x = 60; x < 3000; x += 300) {
+        for (let y = 60; y < 3000; y += 300) {
+            graphics.fillRect(x + 10, y + 10, 20, 20);
+            graphics.fillRect(x + 210, y + 10, 20, 20);
+            graphics.fillRect(x + 10, y + 210, 20, 20);
+            graphics.fillRect(x + 210, y + 210, 20, 20);
+        }
+    }
 
-    buildingPositions.forEach(pos => {
-        const building = buildings.create(pos[0], pos[1], 'building');
+    buildings = this.physics.add.staticGroup();
+    
+    const buildingLayout = [
+        {x: 120, y: 120, type: 'building1'},
+        {x: 420, y: 120, type: 'building2'},
+        {x: 720, y: 120, type: 'building3'},
+        {x: 1020, y: 120, type: 'building1'},
+        {x: 1620, y: 120, type: 'building2'},
+        {x: 2220, y: 120, type: 'building3'},
+        {x: 2820, y: 120, type: 'building1'},
+        
+        {x: 120, y: 420, type: 'building2'},
+        {x: 420, y: 420, type: 'building1'},
+        {x: 1020, y: 420, type: 'building3'},
+        {x: 1320, y: 420, type: 'building2'},
+        {x: 1920, y: 420, type: 'building1'},
+        {x: 2520, y: 420, type: 'building3'},
+        
+        {x: 120, y: 720, type: 'building3'},
+        {x: 720, y: 720, type: 'building1'},
+        {x: 1320, y: 720, type: 'building2'},
+        {x: 1620, y: 720, type: 'building3'},
+        {x: 2220, y: 720, type: 'building1'},
+        {x: 2820, y: 720, type: 'building2'},
+        
+        {x: 420, y: 1020, type: 'building2'},
+        {x: 720, y: 1020, type: 'building3'},
+        {x: 1020, y: 1020, type: 'building1'},
+        {x: 1620, y: 1020, type: 'building2'},
+        {x: 2220, y: 1020, type: 'building3'},
+        {x: 2520, y: 1020, type: 'building1'},
+        
+        {x: 120, y: 1320, type: 'building1'},
+        {x: 720, y: 1320, type: 'building2'},
+        {x: 1320, y: 1320, type: 'building3'},
+        {x: 1920, y: 1320, type: 'building1'},
+        {x: 2520, y: 1320, type: 'building2'},
+        {x: 2820, y: 1320, type: 'building3'},
+        
+        {x: 420, y: 1620, type: 'building3'},
+        {x: 1020, y: 1620, type: 'building1'},
+        {x: 1620, y: 1620, type: 'building2'},
+        {x: 2220, y: 1620, type: 'building3'},
+        {x: 2820, y: 1620, type: 'building1'},
+        
+        {x: 120, y: 1920, type: 'building2'},
+        {x: 420, y: 1920, type: 'building1'},
+        {x: 1020, y: 1920, type: 'building3'},
+        {x: 1620, y: 1920, type: 'building2'},
+        {x: 2220, y: 1920, type: 'building1'},
+        {x: 2520, y: 1920, type: 'building3'},
+        
+        {x: 720, y: 2220, type: 'building1'},
+        {x: 1320, y: 2220, type: 'building2'},
+        {x: 1920, y: 2220, type: 'building3'},
+        {x: 2520, y: 2220, type: 'building1'},
+        {x: 2820, y: 2220, type: 'building2'},
+        
+        {x: 120, y: 2520, type: 'building3'},
+        {x: 420, y: 2520, type: 'building1'},
+        {x: 1020, y: 2520, type: 'building2'},
+        {x: 1620, y: 2520, type: 'building3'},
+        {x: 2220, y: 2520, type: 'building1'},
+        
+        {x: 720, y: 2820, type: 'building2'},
+        {x: 1320, y: 2820, type: 'building3'},
+        {x: 1920, y: 2820, type: 'building1'},
+        {x: 2520, y: 2820, type: 'building2'}
+    ];
+    
+    buildingLayout.forEach(bld => {
+        const building = buildings.create(bld.x, bld.y, bld.type);
         building.setScale(1);
         building.refreshBody();
     });
 
     carGroup = this.physics.add.group();
+    const carTypes = ['car', 'car2', 'car3'];
     Object.values(cars).forEach(carData => {
-        const car = carGroup.create(carData.x, carData.y, 'car');
+        const carType = carTypes[Math.floor(Math.random() * carTypes.length)];
+        const car = carGroup.create(carData.x, carData.y, carType);
         car.carId = carData.id;
         car.setCollideWorldBounds(true);
+        car.setScale(0.8);
     });
 
     npcGroup = this.physics.add.group();
@@ -227,7 +313,7 @@ function create() {
 
     bullets = this.physics.add.group({
         defaultKey: 'bullet',
-        maxSize: 100
+        maxSize: 500
     });
 
     this.physics.add.collider(player, buildings);
@@ -419,6 +505,9 @@ function createMuzzleFlash(scene, x, y, angle) {
 
 function createBullet(scene, data) {
     const bullet = bullets.create(data.x, data.y, 'bullet');
+    
+    if (!bullet) return;
+    
     bullet.setVelocity(data.velocityX, data.velocityY);
     bullet.rotation = data.rotation;
     bullet.shooterId = data.playerId;

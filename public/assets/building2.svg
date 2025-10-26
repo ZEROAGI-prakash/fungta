@@ -1,0 +1,18 @@
+<svg width="120" height="160" xmlns="http://www.w3.org/2000/svg">
+  <rect fill="#95a5a6" width="120" height="160"/>
+  <rect fill="#2c3e50" width="20" height="20" x="10" y="10"/>
+  <rect fill="#2c3e50" width="20" height="20" x="40" y="10"/>
+  <rect fill="#2c3e50" width="20" height="20" x="70" y="10"/>
+  <rect fill="#2c3e50" width="20" height="20" x="10" y="40"/>
+  <rect fill="#2c3e50" width="20" height="20" x="40" y="40"/>
+  <rect fill="#2c3e50" width="20" height="20" x="70" y="40"/>
+  <rect fill="#2c3e50" width="20" height="20" x="10" y="70"/>
+  <rect fill="#2c3e50" width="20" height="20" x="40" y="70"/>
+  <rect fill="#2c3e50" width="20" height="20" x="70" y="70"/>
+  <rect fill="#2c3e50" width="20" height="20" x="10" y="100"/>
+  <rect fill="#2c3e50" width="20" height="20" x="40" y="100"/>
+  <rect fill="#2c3e50" width="20" height="20" x="70" y="100"/>
+  <rect fill="#2c3e50" width="20" height="20" x="10" y="130"/>
+  <rect fill="#2c3e50" width="20" height="20" x="40" y="130"/>
+  <rect fill="#2c3e50" width="20" height="20" x="70" y="130"/>
+</svg>

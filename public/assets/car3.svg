@@ -1,7 +1,7 @@
 <svg width="60" height="40" xmlns="http://www.w3.org/2000/svg">
-  <rect fill="#e74c3c" width="60" height="30" x="0" y="5" rx="6"/>
-  <rect fill="#c0392b" width="20" height="8" x="8" y="0" rx="2"/>
-  <rect fill="#c0392b" width="20" height="8" x="32" y="0" rx="2"/>
+  <rect fill="#2ecc71" width="60" height="30" x="0" y="5" rx="6"/>
+  <rect fill="#27ae60" width="20" height="8" x="8" y="0" rx="2"/>
+  <rect fill="#27ae60" width="20" height="8" x="32" y="0" rx="2"/>
   <rect fill="#34495e" width="14" height="12" x="10" y="8"/>
   <rect fill="#34495e" width="14" height="12" x="36" y="8"/>
   <circle fill="#2c3e50" cx="15" cy="35" r="5"/>
