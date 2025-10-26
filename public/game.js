@@ -263,22 +263,32 @@ function showNotification(message, type) {
 }
 
 function connectToServer() {
-    socket = io({
+    // Ensure we connect to the correct server URL
+    const serverUrl = window.location.origin;
+    socket = io(serverUrl, {
         reconnection: true,
         reconnectionDelay: 1000,
-        reconnectionAttempts: 5
+        reconnectionAttempts: 10,
+        timeout: 10000,
+        transports: ['websocket', 'polling']
     });
 
     socket.on('connect', () => {
-        console.log('✅ Connected to server');
+        console.log('✅ Connected to server:', socket.id);
+        showNotification('Connected to server!', 'success');
+        updateConnectionStatus(true);
     });
 
-    socket.on('disconnect', () => {
-        console.log('❌ Disconnected from server');
+    socket.on('disconnect', (reason) => {
+        console.log('❌ Disconnected from server:', reason);
+        showNotification('Disconnected from server', 'error');
+        updateConnectionStatus(false);
     });
 
     socket.on('connect_error', (error) => {
-        console.error('Connection error:', error);
+        console.error('❌ Connection error:', error);
+        showNotification('Connection failed. Retrying...', 'error');
+        updateConnectionStatus(false);
     });
 
     socket.on('init', (data) => {
@@ -1067,6 +1077,28 @@ function updateHUD() {
     if (playerData.weapons) {
         weaponStats = playerData.weapons;
         updateWeaponUI();
+    }
+    
+    // Update player count
+    const playerCountEl = document.getElementById('playerCount');
+    if (playerCountEl) {
+        const count = Object.keys(players).length;
+        playerCountEl.textContent = `Players: ${count}`;
+    }
+}
+
+function updateConnectionStatus(connected) {
+    const statusEl = document.getElementById('connectionStatus');
+    if (!statusEl) return;
+    
+    if (connected) {
+        statusEl.classList.add('connected');
+        statusEl.classList.remove('disconnected');
+        statusEl.querySelector('.status-text').textContent = 'Connected';
+    } else {
+        statusEl.classList.remove('connected');
+        statusEl.classList.add('disconnected');
+        statusEl.querySelector('.status-text').textContent = 'Disconnected';
     }
 }
 
