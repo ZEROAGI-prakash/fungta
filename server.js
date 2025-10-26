@@ -434,7 +434,7 @@ setInterval(() => {
   });
 }, 50);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 http.listen(PORT, '0.0.0.0', () => {
   console.log(`🎮 GTA 2D Server running on port ${PORT}`);
   console.log(`🌐 Visit: http://localhost:${PORT}`);
