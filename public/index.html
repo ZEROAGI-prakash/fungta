@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="weapons.js"></script>
 </head>
 <body>
     <div id="menu" class="menu">
@@ -36,25 +37,167 @@
                     <div id="healthBar" class="health-fill"></div>
                 </div>
             </div>
+            <div class="armor-bar">
+                <div class="armor-label">ARMOR</div>
+                <div class="armor-container">
+                    <div id="armorBar" class="armor-fill"></div>
+                </div>
+            </div>
             <div class="stats">
                 <div class="stat">
-                    <span class="stat-label">KILLS</span>
+                    <span class="stat-label">💰 MONEY</span>
+                    <span id="money" class="stat-value">$500</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">☠️ KILLS</span>
                     <span id="kills" class="stat-value">0</span>
                 </div>
                 <div class="stat">
-                    <span class="stat-label">DEATHS</span>
+                    <span class="stat-label">💀 DEATHS</span>
                     <span id="deaths" class="stat-value">0</span>
                 </div>
             </div>
         </div>
         <div class="hud-bottom">
             <div class="weapon-info">
-                <div class="weapon-name">🔫 PISTOL</div>
-                <div class="ammo">∞</div>
+                <div class="weapon-details">
+                    <div id="weaponName" class="weapon-name">🔫 PISTOL</div>
+                    <div class="weapon-hint">Press 1-5 to switch | R to reload</div>
+                </div>
+                <div class="ammo-display">
+                    <span id="magAmmo" class="mag-ammo">12</span>
+                    <span class="ammo-separator">/</span>
+                    <span id="reserveAmmo" class="reserve-ammo">100</span>
+                </div>
+            </div>
+            <div class="weapon-selector">
+                <div class="weapon-slot" data-weapon="pistol" data-key="1">
+                    <span class="weapon-key">1</span>
+                    <span class="weapon-icon">🔫</span>
+                    <span class="weapon-label">Pistol</span>
+                </div>
+                <div class="weapon-slot locked" data-weapon="shotgun" data-key="2">
+                    <span class="weapon-key">2</span>
+                    <span class="weapon-icon">🔫</span>
+                    <span class="weapon-label">Shotgun</span>
+                </div>
+                <div class="weapon-slot locked" data-weapon="smg" data-key="3">
+                    <span class="weapon-key">3</span>
+                    <span class="weapon-icon">🔫</span>
+                    <span class="weapon-label">SMG</span>
+                </div>
+                <div class="weapon-slot locked" data-weapon="rifle" data-key="4">
+                    <span class="weapon-key">4</span>
+                    <span class="weapon-icon">🔫</span>
+                    <span class="weapon-label">Rifle</span>
+                </div>
+                <div class="weapon-slot locked" data-weapon="sniper" data-key="5">
+                    <span class="weapon-key">5</span>
+                    <span class="weapon-icon">🔫</span>
+                    <span class="weapon-label">Sniper</span>
+                </div>
             </div>
         </div>
         <div class="player-count">
             <span id="playerCount">Players: 1</span>
+        </div>
+        
+        <!-- Shop Button -->
+        <button id="shopBtn" class="shop-btn">🏪 SHOP (B)</button>
+        
+        <!-- Chat System -->
+        <div class="chat-container">
+            <div id="chatMessages" class="chat-messages"></div>
+            <div class="chat-input-container">
+                <input type="text" id="chatInput" placeholder="Press T to chat..." maxlength="200">
+                <button id="chatSend">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shop Modal -->
+    <div id="shopModal" class="modal">
+        <div class="modal-content shop-content">
+            <div class="modal-header">
+                <h2>🏪 WEAPON SHOP</h2>
+                <span class="modal-close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="shop-balance">
+                    <span>Your Money:</span>
+                    <span id="shopMoney" class="shop-money">$500</span>
+                </div>
+                <div class="shop-section">
+                    <h3>Weapons</h3>
+                    <div class="shop-items">
+                        <div class="shop-item" data-type="weapon" data-item="shotgun">
+                            <div class="item-icon">🔫</div>
+                            <div class="item-info">
+                                <div class="item-name">Shotgun</div>
+                                <div class="item-desc">High damage, close range</div>
+                                <div class="item-stats">DMG: 15x5 | Rate: 800ms</div>
+                            </div>
+                            <div class="item-price">$500</div>
+                        </div>
+                        <div class="shop-item" data-type="weapon" data-item="smg">
+                            <div class="item-icon">🔫</div>
+                            <div class="item-info">
+                                <div class="item-name">SMG</div>
+                                <div class="item-desc">Fast automatic fire</div>
+                                <div class="item-stats">DMG: 12 | Rate: 100ms</div>
+                            </div>
+                            <div class="item-price">$800</div>
+                        </div>
+                        <div class="shop-item" data-type="weapon" data-item="rifle">
+                            <div class="item-icon">🔫</div>
+                            <div class="item-info">
+                                <div class="item-name">Assault Rifle</div>
+                                <div class="item-desc">Balanced automatic weapon</div>
+                                <div class="item-stats">DMG: 25 | Rate: 150ms</div>
+                            </div>
+                            <div class="item-price">$1200</div>
+                        </div>
+                        <div class="shop-item" data-type="weapon" data-item="sniper">
+                            <div class="item-icon">🔫</div>
+                            <div class="item-info">
+                                <div class="item-name">Sniper Rifle</div>
+                                <div class="item-desc">One-shot eliminations</div>
+                                <div class="item-stats">DMG: 80 | Rate: 1500ms</div>
+                            </div>
+                            <div class="item-price">$2000</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="shop-section">
+                    <h3>Supplies</h3>
+                    <div class="shop-items">
+                        <div class="shop-item" data-type="ammo">
+                            <div class="item-icon">📦</div>
+                            <div class="item-info">
+                                <div class="item-name">Ammo Refill</div>
+                                <div class="item-desc">Refill current weapon ammo</div>
+                            </div>
+                            <div class="item-price">$50</div>
+                        </div>
+                        <div class="shop-item" data-type="health">
+                            <div class="item-icon">❤️</div>
+                            <div class="item-info">
+                                <div class="item-name">Health Pack</div>
+                                <div class="item-desc">Restore full health</div>
+                            </div>
+                            <div class="item-price">$100</div>
+                        </div>
+                        <div class="shop-item" data-type="armor">
+                            <div class="item-icon">🛡️</div>
+                            <div class="item-info">
+                                <div class="item-name">Body Armor</div>
+                                <div class="item-desc">Full armor protection</div>
+                            </div>
+                            <div class="item-price">$150</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
